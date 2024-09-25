@@ -64,7 +64,7 @@ col1, col2 = st.columns(2)
 # 1. Enhanced Matrix Rain Effect
 def matrix_rain():
     placeholder = col1.empty()
-    chars = string.ascii_letters + string.digits + string.punctuation
+    chars = string.ascii_letters + string.digits
     lines = ["" for _ in range(20)]
     for _ in range(100):
         for i in range(20):
@@ -72,7 +72,7 @@ def matrix_rain():
                 lines[i] = ''.join(random.choice(chars) for _ in range(60))
             else:
                 lines[i] = lines[i][1:] + random.choice(chars)
-        placeholder.markdown(f"<div class='hacker-text'>{'<br>'.join(lines)}</div>", unsafe_allow_html=True)
+        placeholder.markdown(f"<pre class='hacker-text'>{'<br>'.join(lines)}</pre>", unsafe_allow_html=True)
         time.sleep(0.05)
     placeholder.empty()
 
