@@ -1,152 +1,166 @@
 import streamlit as st
 import time
 import random
-import numpy as np
+import string
 
-st.set_page_config(
-    page_title="Hacker Simulator",
-    page_icon="💻",
-    layout="wide",
-    initial_sidebar_state="collapsed"
-)
+st.set_page_config(page_title="Advanced Hacker Simulator", page_icon="🕵️", layout="wide", initial_sidebar_state="collapsed")
 
-# Add CSS for matrix effect and styling
+# Enhanced CSS for a more intimidating look
 st.markdown("""
-    <style>
-    body {
-        background-color: black;
-        color: #00FF00;
-        overflow: hidden;
-        font-family: 'Courier', monospace;
-    }
-    .hacker-text {
-        color: #00FF00;
-        font-size: 16px;
-        white-space: pre-wrap;
-        word-wrap: break-word;
-    }
-    #header {
-        text-align: center;
-    }
-    #control-panel {
-        margin-top: 20px;
-    }
-    .stProgress > div > div > div > div {
-        background-color: #00FF00;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+<style>
+body {
+    background-color: #000;
+    color: #0F0;
+    font-family: 'Courier New', monospace;
+}
+.stApp {
+    background-image: linear-gradient(rgba(0, 255, 0, 0.1) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(0, 255, 0, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+.main {
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 2rem;
+    border-radius: 10px;
+    border: 1px solid #0F0;
+}
+.hacker-text {
+    color: #0F0;
+    font-size: 14px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    text-shadow: 0 0 5px #0F0;
+}
+.stButton>button {
+    background-color: #000;
+    color: #0F0;
+    border: 1px solid #0F0;
+}
+.stButton>button:hover {
+    background-color: #0F0;
+    color: #000;
+}
+.warning {
+    color: #FF0000;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    animation: blink 1s infinite;
+}
+@keyframes blink {
+    0% {opacity: 0;}
+    50% {opacity: 1;}
+    100% {opacity: 0;}
+}
+</style>
+""", unsafe_allow_html=True)
 
 # Header
-st.markdown("<h1 id='header' class='hacker-text'>💻 HACKER SIMULATOR 💻</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; color: #0F0;'>🕵️ ADVANCED HACKER SIMULATOR 🕵️</h1>", unsafe_allow_html=True)
 
 # Create columns for layout
 col1, col2 = st.columns(2)
 
-# Function to generate matrix effect
-def generate_matrix_lines():
-    chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+[]{}|;:',.<>/?"
-    return ''.join(random.choices(chars, k=60))
-
-def matrix_stream():
+# 1. Enhanced Matrix Rain Effect
+def matrix_rain():
     placeholder = col1.empty()
+    chars = string.ascii_letters + string.digits + string.punctuation
+    lines = ["" for _ in range(20)]
     for _ in range(100):
-        lines = "\n".join([generate_matrix_lines() for _ in range(20)])
-        placeholder.markdown(f"<div class='hacker-text'>{lines}</div>", unsafe_allow_html=True)
-        time.sleep(0.1)
+        for i in range(20):
+            if random.random() < 0.1:
+                lines[i] = ''.join(random.choice(chars) for _ in range(60))
+            else:
+                lines[i] = lines[i][1:] + random.choice(chars)
+        placeholder.markdown(f"<div class='hacker-text'>{'<br>'.join(lines)}</div>", unsafe_allow_html=True)
+        time.sleep(0.05)
     placeholder.empty()
 
-# Fake terminal with interactive commands
-def terminal():
-    placeholder = col1.empty()
-    terminal_history = []
-    while True:
-        cmd = col1.text_input("Enter Command:", key=str(random.randint(0, 1000000)))
-        if cmd:
-            response = random.choice([
-                "Command not found",
-                f"Executed {cmd} successfully",
-                "Error: Access Denied",
-                f"Output of {cmd}:\n" + generate_matrix_lines()
-            ])
-            terminal_history.append(f"$ {cmd}\n{response}\n")
-            history = "\n".join(terminal_history[-5:])  # Show last 5 commands
-            placeholder.markdown(f"<div class='hacker-text'>{history}</div>", unsafe_allow_html=True)
-            time.sleep(1)
-        else:
-            break
-
-# Progress bar for "hacking"
-def hacking_progress_bar(task, duration):
-    col2.markdown(f"<p class='hacker-text'>[+] {task}</p>", unsafe_allow_html=True)
+# 2. Advanced Network Scanner
+def network_scanner():
+    col2.markdown("<h3 class='hacker-text'>🌐 Network Scanner</h3>", unsafe_allow_html=True)
     progress = col2.progress(0)
-    for percent in range(100):
-        time.sleep(duration)
-        progress.progress(percent + 1)
-    col2.markdown(f"<p class='hacker-text'>[+] {task} - Completed</p>", unsafe_allow_html=True)
+    ips = [f"192.168.1.{i}" for i in range(1, 255)]
+    open_ports = [21, 22, 80, 443, 3306, 5432]
+    for i, ip in enumerate(ips):
+        if random.random() < 0.1:
+            ports = random.sample(open_ports, k=random.randint(1, 3))
+            col2.markdown(f"<p class='hacker-text'>[+] {ip} - Open ports: {', '.join(map(str, ports))}</p>", unsafe_allow_html=True)
+        progress.progress((i + 1) / len(ips))
+        time.sleep(0.01)
+    col2.markdown("<p class='hacker-text'>[✓] Network scan completed</p>", unsafe_allow_html=True)
 
-# Fake Password Decryption
-def fake_password_decryption():
-    col2.markdown("<p class='hacker-text'>[*] Decrypting Passwords...</p>", unsafe_allow_html=True)
-    passwords = ["admin", "root", "123456", "letmein", "password", "hunter2"]
-    for password in passwords:
+# 3. Brute Force Password Cracker
+def password_cracker():
+    col2.markdown("<h3 class='hacker-text'>🔓 Password Cracker</h3>", unsafe_allow_html=True)
+    target = "admin@example.com"
+    col2.markdown(f"<p class='hacker-text'>[*] Target: {target}</p>", unsafe_allow_html=True)
+    progress = col2.progress(0)
+    for i in range(100):
+        password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+        col2.markdown(f"<p class='hacker-text'>[*] Trying: {password}</p>", unsafe_allow_html=True)
+        progress.progress(i + 1)
+        time.sleep(0.05)
+    col2.markdown(f"<p class='hacker-text'>[✓] Password cracked: {''.join(random.choices(string.ascii_letters + string.digits, k=12))}</p>", unsafe_allow_html=True)
+
+# 4. Data Exfiltration Simulator
+def data_exfiltration():
+    col2.markdown("<h3 class='hacker-text'>📤 Data Exfiltration</h3>", unsafe_allow_html=True)
+    files = ["user_data.db", "financial_records.xlsx", "passwords.txt", "confidential_report.pdf", "emails.pst"]
+    total_size = sum(random.randint(100, 1000) for _ in files)
+    progress = col2.progress(0)
+    for file in files:
+        size = random.randint(100, 1000)
+        col2.markdown(f"<p class='hacker-text'>[*] Extracting: {file} ({size} MB)</p>", unsafe_allow_html=True)
+        for i in range(size):
+            progress.progress((i + 1) / total_size)
+            time.sleep(0.01)
+    col2.markdown("<p class='hacker-text'>[✓] Data exfiltration complete</p>", unsafe_allow_html=True)
+
+# 5. System Backdoor Installation
+def install_backdoor():
+    col2.markdown("<h3 class='hacker-text'>🚪 Backdoor Installation</h3>", unsafe_allow_html=True)
+    stages = ["Creating payload", "Bypassing antivirus", "Exploiting vulnerability", "Elevating privileges", "Establishing persistence"]
+    progress = col2.progress(0)
+    for i, stage in enumerate(stages):
+        col2.markdown(f"<p class='hacker-text'>[*] {stage}...</p>", unsafe_allow_html=True)
+        for j in range(20):
+            progress.progress((i * 20 + j + 1) / 100)
+            time.sleep(0.05)
+    col2.markdown("<p class='hacker-text'>[✓] Backdoor successfully installed</p>", unsafe_allow_html=True)
+
+# 6. Simulated System Takeover
+def system_takeover():
+    col1.markdown("<h3 class='hacker-text'>🖥️ System Takeover</h3>", unsafe_allow_html=True)
+    services = ["Firewall", "Antivirus", "User Authentication", "File System", "Network Services"]
+    for service in services:
+        col1.markdown(f"<p class='hacker-text'>[*] Disabling {service}...</p>", unsafe_allow_html=True)
         time.sleep(1)
-        col2.markdown(f"<p class='hacker-text'>[+] Decrypted Password: {password}</p>", unsafe_allow_html=True)
-    col2.markdown("<p class='hacker-text'>[*] Password Decryption Completed!</p>", unsafe_allow_html=True)
-
-# Fake File System Navigation
-def file_system_navigation():
-    col2.markdown("<p class='hacker-text'>[*] Navigating File System...</p>", unsafe_allow_html=True)
-    directories = ["/", "/home", "/home/user", "/home/user/documents", "/var/log", "/etc", "/etc/ssh"]
-    for directory in directories:
-        time.sleep(0.5)
-        col2.markdown(f"<p class='hacker-text'>cd {directory}</p>", unsafe_allow_html=True)
-        files = ["config.txt", "data.bin", "notes.md", "passwd", "shadow"]
-        for file in files:
-            time.sleep(0.1)
-            col2.markdown(f"<p class='hacker-text'>-rw-r--r-- 1 user user 4096 Jan 1 12:00 {file}</p>", unsafe_allow_html=True)
-
-# Fake Email Hacking Simulation
-def email_hacking():
-    col2.markdown("<p class='hacker-text'>[*] Accessing Email Server...</p>", unsafe_allow_html=True)
-    for _ in range(5):
-        email = f"user{random.randint(1, 100)}@example.com"
-        time.sleep(0.5)
-        col2.markdown(f"<p class='hacker-text'>[+] Found Email: {email}</p>", unsafe_allow_html=True)
-    col2.markdown("<p class='hacker-text'>[*] Extracting Emails...</p>", unsafe_allow_html=True)
-    for _ in range(10):
-        subject = f"Subject: {generate_matrix_lines()[:20]}"
-        time.sleep(0.3)
-        col2.markdown(f"<p class='hacker-text'>{subject}</p>", unsafe_allow_html=True)
-    col2.markdown("<p class='hacker-text'>[*] Email Extraction Completed!</p>", unsafe_allow_html=True)
+        col1.markdown(f"<p class='hacker-text'>[✓] {service} disabled</p>", unsafe_allow_html=True)
+    time.sleep(1)
+    col1.markdown("<p class='warning'>⚠️ SYSTEM COMPROMISED ⚠️</p>", unsafe_allow_html=True)
+    col1.markdown("<p class='hacker-text'>[✓] Full system control achieved</p>", unsafe_allow_html=True)
 
 # Sidebar with options
-st.sidebar.markdown("<h2 id='control-panel' class='hacker-text'>Control Panel</h2>", unsafe_allow_html=True)
+st.sidebar.markdown("<h2 style='color: #0F0;'>Hacker's Toolkit</h2>", unsafe_allow_html=True)
 
-if st.sidebar.button("Start Matrix"):
-    matrix_stream()
+if st.sidebar.button("1. Start Matrix Rain"):
+    matrix_rain()
 
-if st.sidebar.button("Interactive Terminal"):
-    terminal()
+if st.sidebar.button("2. Scan Network"):
+    network_scanner()
 
-if st.sidebar.button("Start Hack"):
-    hacking_progress_bar("Scanning network", 0.01)
-    hacking_progress_bar("Exploiting vulnerability", 0.03)
-    hacking_progress_bar("Extracting data", 0.02)
+if st.sidebar.button("3. Crack Passwords"):
+    password_cracker()
 
-if st.sidebar.button("Decrypt Passwords"):
-    fake_password_decryption()
+if st.sidebar.button("4. Exfiltrate Data"):
+    data_exfiltration()
 
-if st.sidebar.button("Navigate File System"):
-    file_system_navigation()
+if st.sidebar.button("5. Install Backdoor"):
+    install_backdoor()
 
-if st.sidebar.button("Email Hack"):
-    email_hacking()
+if st.sidebar.button("6. Take Over System"):
+    system_takeover()
 
-# Conclusion
-st.markdown("<p class='hacker-text'>[*] Operation Completed!</p>", unsafe_allow_html=True)
-
-# Extra Fun: Show a Random Fake Warning
-if st.sidebar.button("Show Warning"):
-    st.markdown("<h1 style='color:red;'>⚠️ SYSTEM BREACH DETECTED ⚠️</h1>", unsafe_allow_html=True)
-    st.markdown("<p class='hacker-text'>Immediate action required! The system is compromised!</p>", unsafe_allow_html=True)
+# Disclaimer
+st.markdown("<p style='text-align: center; color: #FF0000; font-size: 12px;'>⚠️ This is a simulation for educational purposes only. Unauthorized hacking is illegal. ⚠️</p>", unsafe_allow_html=True)
